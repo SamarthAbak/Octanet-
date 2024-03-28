@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Website Project To-Do List</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      
+      .container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      
+      h1, h2 {
+        text-align: center;
+      }
+      
+      .task-section {
+        margin-bottom: 20px;
+      }
+      
+      ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      
+      .task {
+        padding: 10px;
+        margin-bottom: 5px;
+        border-radius: 5px;
+      }
+      
+      .high-priority {
+        background-color: #ff9999;
+      }
+      
+      .medium-priority {
+        background-color: #ffff99;
+      }
+      
+      .low-priority {
+        background-color: #99ff99;
+      }
+      
+      .form-section {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 5px;
+      }
+      
+      .form-section label {
+        display: block;
+        margin-bottom: 5px;
+      }
+      
+      .form-section input[type="text"],
+      .form-section input[type="date"],
+      .form-section select {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+      }
+      
+      .form-section button {
+        width: 100%;
+        padding: 10px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+      
+      .form-section button:hover {
+        background-color: #45a049;
+      }
+      
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Website Project To-Do List</h1>
+  
+  
+  <div class="task-section">
+    <h2>Tasks</h2>
+    <ul id="tasks-list">
+      
+    </ul>
+  </div>
+
+  
+  <div class="form-section">
+    <h2>Add Task</h2>
+    <form id="task-form">
+      <div>
+        <label for="task-name">Task Name:</label>
+        <input type="text" id="task-name" required>
+      </div>
+      <div>
+        <label for="deadline">Deadline:</label>
+        <input type="date" id="deadline" required>
+      </div>
+      <div>
+        <label for="priority">Priority:</label>
+        <select id="priority" required>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
+      <div>
+        <label for="label">Label:</label>
+        <input type="text" id="label">
+      </div>
+      <button type="submit">Add Task</button>
+    </form>
+  </div>
+</div>
+
+<script >
+    document.addEventListener('DOMContentLoaded', function() {
+        const taskForm = document.getElementById('task-form');
+        const taskList = document.getElementById('tasks-list');
+      
+        
+        taskForm.addEventListener('submit', function(event) {
+          event.preventDefault();
+          const taskName = document.getElementById('task-name').value;
+          const deadline = document.getElementById('deadline').value;
+          const priority = document.getElementById('priority').value;
+          const label = document.getElementById('label').value;
+          addTask(taskName, deadline, priority, label);
+          taskForm.reset();
+        });
+      
+        
+        function addTask(name, deadline, priority, label) {
+          const taskItem = document.createElement('li');
+          taskItem.classList.add('task', priority + '-priority');
+          taskItem.innerHTML = `
+            <div>
+              <strong>${name}</strong>
+              <br>
+              Deadline: ${deadline}
+              <br>
+              Priority: ${priority}
+              <br>
+              Label: ${label}
+            </div>
+            <div>
+              <button class="edit-btn">Edit</button>
+              <button class="delete-btn">Delete</button>
+              <input type="checkbox" class="completion-checkbox">
+            </div>
+          `;
+          taskList.appendChild(taskItem);
+      
+          
+          const editButton = taskItem.querySelector('.edit-btn');
+          editButton.addEventListener('click', function() {
+            editTask(taskItem, name, deadline, priority, label);
+          });
+      
+          
+          const deleteButton = taskItem.querySelector('.delete-btn');
+          deleteButton.addEventListener('click', function() {
+            taskList.removeChild(taskItem);
+          });
+      
+          
+          const completionCheckbox = taskItem.querySelector('.completion-checkbox');
+          completionCheckbox.addEventListener('change', function() {
+            if (completionCheckbox.checked) {
+              taskItem.classList.add('completed');
+            } else {
+              taskItem.classList.remove('completed');
+            }
+          });
+        }
+      
+        
+        function editTask(taskItem, name, deadline, priority, label) {
+          const taskContent = taskItem.querySelector('div');
+          taskContent.innerHTML = `
+            <label for="edit-task-name">Task Name:</label>
+            <input type="text" id="edit-task-name" value="${name}" required>
+            <br>
+            <label for="edit-deadline">Deadline:</label>
+            <input type="date" id="edit-deadline" value="${deadline}" required>
+            <br>
+            <label for="edit-priority">Priority:</label>
+            <select id="edit-priority" required>
+              <option value="high" ${priority === 'high' ? 'selected' : ''}>High</option>
+              <option value="medium" ${priority === 'medium' ? 'selected' : ''}>Medium</option>
+              <option value="low" ${priority === 'low' ? 'selected' : ''}>Low</option>
+            </select>
+            <br>
+            <label for="edit-label">Label:</label>
+            <input type="text" id="edit-label" value="${label}">
+            <br>
+            <button class="save-btn">Save</button>
+          `;
+      
+          
+          const saveButton = taskContent.querySelector('.save-btn');
+          saveButton.addEventListener('click', function() {
+            const editedName = document.getElementById('edit-task-name').value;
+            const editedDeadline = document.getElementById('edit-deadline').value;
+            const editedPriority = document.getElementById('edit-priority').value;
+            const editedLabel = document.getElementById('edit-label').value;
+            taskContent.innerHTML = `
+              <strong>${editedName}</strong>
+              <br>
+              Deadline: ${editedDeadline}
+              <br>
+              Priority: ${editedPriority}
+              <br>
+              Label: ${editedLabel}
+            `;
+          });
+        }
+      });
+      
+</script>
+</body>
+</html>
